@@ -9,6 +9,6 @@ export function initDB(dbPath: string): Database {
     amount REAL NOT NULL,
     date TEXT NOT NULL
     )`;
-  database.exec(query);
+  database.run(query);
   return database;
 }
