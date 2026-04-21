@@ -1,6 +1,10 @@
 import { tool } from "langchain";
 import z from "zod";
-export const addExpense = tool(
+
+import { Database } from "bun:sqlite";
+
+export function initTools(database:Database){
+const addExpense = tool(
   ({ title, amount }) => {
     console.log({ title, amount });
     return JSON.stringify({status:'success'})
@@ -15,3 +19,5 @@ export const addExpense = tool(
     }),
   },
 );
+  return [addExpense]
+}
