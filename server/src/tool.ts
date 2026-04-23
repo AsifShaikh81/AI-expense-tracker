@@ -8,12 +8,13 @@ export function initTools(database: Database) {
   const addExpense = tool(
     ({ title, amount }) => {
       console.log({ title, amount });
-      const date = new Date().toISOString().split("T")[0];
+      // const date = new Date().toISOString().split("T")[0];
+      const date = new Date().toISOString().slice(0,10)
       const statement = database.prepare(
         `INSERT INTO expenses (title,amount, date)VALUES (?,?,?)`,
       );
 
-      statement.run(title, amount, date);
+      statement.run(title, amount,date);
       return JSON.stringify({ status: "success" });
     },
 
@@ -27,7 +28,7 @@ export function initTools(database: Database) {
     },
   );
   // * get expense
-  const getExpense = tool(
+  const getExpenses = tool(
     ({ from, to }) => {
       console.log({ from, to });
       const stmt = database.prepare(
@@ -48,6 +49,73 @@ export function initTools(database: Database) {
         to: z.string().describe("end date of expense in YYYY-MM-DD format"),
       }),
     },
+
   );
-  return [addExpense, getExpense];
+
+  //* get chart expenses
+    const generateChart = tool(
+    ({ from, to, groupBy }) => {
+      let sqlGroupBy: string;
+
+      switch (groupBy) {
+        case 'month':
+          sqlGroupBy = `strftime('%Y-%m', date)`;
+          break;
+
+        case 'week':
+          sqlGroupBy = `strftime('%Y-W%W', date)`;
+          break;
+
+        case 'date':
+          sqlGroupBy = `date`;
+          break;
+
+        default:
+          sqlGroupBy = `strftime('%Y-%m', date)`;
+      }
+
+      const query = `
+        SELECT ${sqlGroupBy} as period, SUM(amount) as total
+        FROM expenses
+        WHERE date BETWEEN ? AND ?
+        GROUP BY period
+        ORDER BY period
+      `;
+
+      const stmt = database.prepare(query);
+      const rows = stmt.all(from, to);
+
+      const result = rows.map((row) => {
+        return {
+          [groupBy]: row.period,
+          amount: row.total,
+        };
+      });
+
+      return JSON.stringify({
+        type: 'chart',
+        data: result,
+        labelKey: groupBy,
+      });
+    },
+    {
+      name: 'generate_expense_chart',
+      description:
+        'Generate expense charts by querying the database and grouping expenses by month, week or date',
+      schema: z.object({
+        from: z
+          .string()
+          .describe('Start date in YYYY-MM-DD format'),
+        to: z
+          .string()
+          .describe('End date in YYYY-MM-DD format'),
+        groupBy: z
+          .enum(['month', 'week', 'date'])
+          .describe(
+            'How to group the data: by month, week or date.'
+          ),
+      }),
+    }
+  );
+  return [addExpense, getExpenses, generateChart];
 }
