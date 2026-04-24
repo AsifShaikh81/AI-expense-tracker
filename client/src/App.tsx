@@ -1,14 +1,7 @@
-
-// import './App.css'
+import { ChatContainer } from "./Components/ChatContainer";
 
 function App() {
-
-
-  return (
-    <>
-      <h1>welcome</h1>
-    </>
-  )
+  return <ChatContainer />;
 }
 
 export default App
