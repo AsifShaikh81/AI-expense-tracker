@@ -1,8 +1,54 @@
-import { ChatInput } from './ChatInput';
-import { ChatMessage } from './ChatMessage';
+import { useEffect, useState } from "react";
+import { ChatInput } from "./ChatInput";
+import { ChatMessage } from "./ChatMessage";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 const messages = [];
 export function ChatContainer() {
+  const [message, setMessage] = useState();
+
+  //* SSE((server sent event)) - recciving on clinet side
+
+   //* library
+    async function submitQuery(userInput:string) {
+      await fetchEventSource("http://localhost:3000/chat", {
+        onmessage(ev) {
+          console.log(ev.event)
+          console.log(ev.data);
+        },
+        method: "POST",
+        body: JSON.stringify({ QUER: userInput }),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+    }
+  useEffect(() => {
+   
+
+    
+
+    /* const evtSource = new EventSource(
+    'http://localhost:3000/chat'
+  )
+
+  evtSource.addEventListener('open',()=>{
+    console.log('connection open')
+  })
+  evtSource.addEventListener('message',(data)=>{
+    console.log('Received message:', data )
+  })
+
+  evtSource.addEventListener('my-ping',(eventName)=>{
+    console.log('Received custom event: ', eventName)
+  }) */
+  }, []);
+
+  function Submit(userInput: string) {
+    // console.log("userInput", userInput);
+    submitQuery(userInput);
+
+  }
   return (
     <div className="flex flex-col h-screen w-full bg-zinc-950">
       {/* Header */}
@@ -14,7 +60,8 @@ export function ChatContainer() {
                 className="w-6 h-6 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor">
+                stroke="currentColor"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -27,9 +74,7 @@ export function ChatContainer() {
               <h1 className="text-lg font-semibold text-zinc-100">
                 AI Expense Tracker
               </h1>
-              <p className="text-xs text-zinc-500">
-                Powered by advanced AI
-              </p>
+              <p className="text-xs text-zinc-500">Powered by advanced AI</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -50,7 +95,8 @@ export function ChatContainer() {
                   className="w-10 h-10 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke="currentColor">
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -63,39 +109,37 @@ export function ChatContainer() {
                 How can I help you today?
               </h2>
               <p className="text-zinc-500 text-center max-w-md mb-8">
-                Ask me anything, and I'll do my best to
-                assist you with information, analysis, and
-                creative solutions.
+                Ask me anything, and I'll do my best to assist you with
+                information, analysis, and creative solutions.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl px-4">
                 {[
                   {
-                    icon: '💡',
-                    title: 'Get ideas',
-                    desc: 'Brainstorm creative solutions',
+                    icon: "💡",
+                    title: "Get ideas",
+                    desc: "Brainstorm creative solutions",
                   },
                   {
-                    icon: '📊',
-                    title: 'Analyze data',
-                    desc: 'Extract insights from information',
+                    icon: "📊",
+                    title: "Analyze data",
+                    desc: "Extract insights from information",
                   },
                   {
-                    icon: '✍️',
-                    title: 'Write content',
-                    desc: 'Create engaging text and copy',
+                    icon: "✍️",
+                    title: "Write content",
+                    desc: "Create engaging text and copy",
                   },
                   {
-                    icon: '🔧',
-                    title: 'Solve problems',
-                    desc: 'Find answers to your questions',
+                    icon: "🔧",
+                    title: "Solve problems",
+                    desc: "Find answers to your questions",
                   },
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-zinc-800/40 border border-zinc-700/50 hover:border-purple-500/50 transition-all cursor-pointer group">
-                    <div className="text-2xl mb-2">
-                      {item.icon}
-                    </div>
+                    className="p-4 rounded-xl bg-zinc-800/40 border border-zinc-700/50 hover:border-purple-500/50 transition-all cursor-pointer group"
+                  >
+                    <div className="text-2xl mb-2">{item.icon}</div>
                     <div className="text-sm font-medium text-zinc-200 group-hover:text-purple-400 transition-colors">
                       {item.title}
                     </div>
@@ -117,7 +161,7 @@ export function ChatContainer() {
 
       {/* Input Area */}
       <div className="shrink-0 w-full">
-        <ChatInput />
+        <ChatInput Submit={Submit} />
       </div>
     </div>
   );
