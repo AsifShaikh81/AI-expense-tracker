@@ -1,16 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import type { StreamMessage } from "../type.ts";
 
-const messages = [];
+
 export function ChatContainer() {
-  const [message, setMessage] = useState();
+  const [messages, setMessages] = useState<StreamMessage[]>([]);
 
   //* SSE((server sent event)) - recciving on clinet side
 
    //* library
     async function submitQuery(userInput:string) {
+      setMessages((prevM)=>{
+        return [
+          ...prevM,
+          {
+            type:'user', 
+            payload:{text:userInput},
+            id:Date.now().toString()
+          }
+        ]
+      })
       await fetchEventSource("http://localhost:3000/chat", {
         onmessage(ev) {
           console.log(ev.event)
@@ -23,12 +34,12 @@ export function ChatContainer() {
         },
       });
     }
-  useEffect(() => {
+/*   useEffect(() => {
    
 
     
 
-    /* const evtSource = new EventSource(
+     const evtSource = new EventSource(
     'http://localhost:3000/chat'
   )
 
@@ -41,8 +52,8 @@ export function ChatContainer() {
 
   evtSource.addEventListener('my-ping',(eventName)=>{
     console.log('Received custom event: ', eventName)
-  }) */
-  }, []);
+  }) 
+  }, []); */
 
   function Submit(userInput: string) {
     // console.log("userInput", userInput);
@@ -153,7 +164,14 @@ export function ChatContainer() {
           ) : (
             <div className="divide-y divide-zinc-800/50">
               {/* Messages will be displayed here... */}
-              <ChatMessage />
+              {messages.map((message)=>{
+                return (
+                  <div key={message.id}>
+                    <ChatMessage message={message}/>
+
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>

@@ -30,7 +30,9 @@ export function ChatInput({Submit}: Props) {
 
       console.log('You typed:', input.trim());
       // handle submit here...
+      setInput('');
     }
+
   };
 
   useEffect(() => {

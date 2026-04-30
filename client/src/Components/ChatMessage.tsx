@@ -1,8 +1,13 @@
 import { User } from 'lucide-react';
+import type { StreamMessage } from '../type.ts';
+type Props = {
+  message:StreamMessage
+}
 
-export function ChatMessage() {
-  return (
-    <div className="flex gap-4 py-6 px-6 transition-colors">
+export function ChatMessage({message}:Props) {
+  if(message.type==='user'){
+    return (
+     <div className="flex gap-4 py-6 px-6 transition -colors">
       <div className="shrink-0">
         <div className="w-8 h-8 rounded-lg bg-linear-to-br from-white-500 via-white-500 to-gray-500 flex items-center justify-center shadow-lg">
           <User color="white" />
@@ -16,6 +21,8 @@ export function ChatMessage() {
           Hello, how are you?
         </div>
       </div>
-    </div>
-  );
+    </div> 
+    )
+
+  }
 }

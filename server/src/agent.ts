@@ -75,7 +75,7 @@ __end__:"__end__"
 
 })
 
-const agent = graph.compile({
+export const agent = graph.compile({
     checkpointer: new MemorySaver()
 })
 
@@ -95,4 +95,4 @@ async function main() {
     console.log(JSON.stringify(response, null, 2))
 }
 
-main()
+// main()
