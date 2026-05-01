@@ -1,9 +1,10 @@
 import { ChatGroq } from "@langchain/groq";
-import { MemorySaver, MessagesAnnotation, StateGraph } from "@langchain/langgraph";
+import { MemorySaver, MessagesAnnotation, StateGraph, type LangGraphRunnableConfig } from "@langchain/langgraph";
 import { initDB } from "./db.ts";
 import { initTools } from "./tool.ts";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import type { AIMessage, ToolMessage } from "langchain";
+import type { StreamMessage } from "./type.ts";
 
 // * init database
 const database = initDB("./expenses.db");
@@ -37,11 +38,23 @@ async function callModel(state: typeof MessagesAnnotation.State) {
 }
 
 // *conditional edge
-function shouldContinue1(state:typeof MessagesAnnotation.State){
+function shouldContinue1(state:typeof MessagesAnnotation.State,
+    config: LangGraphRunnableConfig
+
+){
     const messages = state.messages
     const lastMessages = messages.at(-1) as AIMessage
     if(lastMessages.tool_calls?.length){
-        return 'tools'
+      //* send custom event
+      const customMessage: StreamMessage = {
+        type:'toolCall:start',
+        payload:{
+          name:lastMessages.tool_calls[0]?.name,
+          args:lastMessages.tool_calls[0]?.args
+        }
+      }
+      config.writer(customMessage)
+      return 'tools'
     }
 
     return '__end__'
@@ -79,7 +92,7 @@ export const agent = graph.compile({
     checkpointer: new MemorySaver()
 })
 
-async function main() {
+/* async function main() {
  const config = {configurable:{thread_id:"1"}}
     const response = await agent.invoke({
         messages:[
@@ -93,6 +106,6 @@ async function main() {
 
 )
     console.log(JSON.stringify(response, null, 2))
-}
+} */
 
 // main()

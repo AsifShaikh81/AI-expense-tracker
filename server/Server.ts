@@ -17,7 +17,7 @@ app.post('/chat', async (req, res) => {
   // 1. Add special header
   // 2. Send data in special format
 
-  const { query } = req.body;
+  const { QUER } = req.body;
 
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -28,7 +28,7 @@ app.post('/chat', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: query,
+          content: QUER,
         },
       ],
     },

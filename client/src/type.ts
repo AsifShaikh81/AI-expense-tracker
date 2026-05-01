@@ -28,8 +28,5 @@ export type StreamMessage =
       id: string;
 
       type: "user";
-      payload: {
-        name: string;
-        result: Record<string, any>;
-      };
+      payload: { text: string };
     };

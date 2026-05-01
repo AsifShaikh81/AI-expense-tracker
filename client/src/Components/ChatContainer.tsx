@@ -12,20 +12,82 @@ export function ChatContainer() {
 
    //* library
     async function submitQuery(userInput:string) {
-      setMessages((prevM)=>{
+      setMessages((prevMessages)=>{
         return [
-          ...prevM,
+          ...prevMessages,
           {
             type:'user', 
             payload:{text:userInput},
-            id:Date.now().toString()
+            id:`${Date.now()}-${Math.random()}`
           }
         ]
       })
       await fetchEventSource("http://localhost:3000/chat", {
         onmessage(ev) {
-          console.log(ev.event)
-          console.log(ev.data);
+          // console.log(ev.event)
+          // console.log(ev.data);
+           const parsedData = JSON.parse(
+          ev.data
+        ) as StreamMessage;
+
+        if (parsedData.type === 'ai') {
+          setMessages((prevMessages) => {
+            const lastMessage =
+              prevMessages[prevMessages.length - 1];
+
+            if (lastMessage && lastMessage.type === 'ai') {
+              // append to lat message
+              const clonedMessages = [...prevMessages];
+
+              clonedMessages[clonedMessages.length - 1] = {
+                ...lastMessage,
+                payload: {
+                  text:
+                    lastMessage.payload.text +
+                    parsedData.payload.text,
+                },
+              };
+
+              return clonedMessages;
+            } else {
+              return [
+                ...prevMessages,
+                {
+                  id: Date.now().toString(),
+                  type: 'ai',
+                  payload: parsedData.payload,
+                },
+              ];
+            }
+          });
+
+          // console.log(parsedData);
+        } 
+         else if (parsedData.type === 'toolCall:start') {
+          setMessages((prevMessages) => {
+            return [
+              ...prevMessages,
+              {
+                id: Date.now().toString(),
+                type: 'toolCall:start',
+                payload: parsedData.payload,
+              },
+            ];
+          });
+        } else if (parsedData.type === 'tool') {
+          setMessages((prevMessages) => {
+            return [
+              ...prevMessages,
+              {
+                id: Date.now().toString(),
+                type: 'tool',
+                payload: parsedData.payload,
+              },
+            ];
+          });
+        }
+        
+
         },
         method: "POST",
         body: JSON.stringify({ QUER: userInput }),
