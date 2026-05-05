@@ -1,3 +1,4 @@
+import { CircleDollarSign } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 type Props = {
@@ -46,7 +47,7 @@ export function ChatInput({Submit}: Props) {
     <div className="bg-zinc-950 backdrop-blur-xl w-full">
       <div className="w-full max-w-5xl mx-auto p-2">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="relative flex items-end gap-3 bg-zinc-900 rounded-3xl border-zinc-600 focus-within:border-purple-500 transition-all shadow-2xl">
+          <div className="relative flex items-end gap-3 bg-zinc-900 rounded-3xl border-zinc-600 focus-within:border-orange-500 transition-all shadow-2xl">
             <textarea
               ref={textareaRef}
               value={input}
@@ -60,19 +61,11 @@ export function ChatInput({Submit}: Props) {
             <button
               type="submit"
               disabled={false}
-              className="shrink-0 m-2.5 p-3.5 rounded-2xl bg-linear-to-br from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-xl hover:shadow-purple-500/50 disabled:hover:shadow-none hover:scale-105 active:scale-95">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
+              className="shrink-0 m-2.5 p-3.5 rounded-2xl bg-linear-to-br from-[#f59e0b] to-[#ef4444] 
+              hover:from-[#f59e0b] to-[#ef4444] 
+              hover:to-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-xl hover:shadow-orange-400/50 disabled:hover:shadow-none hover:scale-105 active:scale-95">
+             <CircleDollarSign className="text-white"/>
+
             </button>
           </div>
         </form>

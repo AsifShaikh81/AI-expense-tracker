@@ -1,5 +1,6 @@
-import { User, Wrench } from 'lucide-react';
+import { BrainIcon, User, Wrench } from 'lucide-react';
 import type { StreamMessage } from '../type.ts';
+import { ExpenseChart } from './ExpenseChart.tsx';
 type Props = {
   message:StreamMessage
 }
@@ -30,7 +31,10 @@ export function ChatMessage({message}:Props) {
       <div className="shrink-0">
         <div className="w-8 h-8 rounded-lg bg-linear-to-br from-white-500 via-white-500 to-gray-500 flex items-center justify-center shadow-lg">
           {/* todo change this icon  */}
-          <User color="white" />
+          {/* <User color="white" /> */}
+          <BrainIcon className='text-white {
+            
+          }'/>
         </div>
       </div>
       <div className="flex-1 space-y-2 overflow-hidden">
@@ -102,14 +106,15 @@ export function ChatMessage({message}:Props) {
               2
             )}
           </div>
-
-          {/* {message.payload.name ===
+          
+          {message.payload.name ===
             'generate_expense_chart' && (
             <ExpenseChart
-              chartData={message.payload.result.data}
-              labelKey={message.payload.result.labelKey}
+               chartData={message.payload.result.data}
+              labelKey={message.payload.result.labelKey} 
             />
-          )} */}
+          )}
+          
         </div>
       </div>
     );

@@ -29,12 +29,17 @@ export function initTools(database: Database) {
   );
   // * get expense
   const getExpenses = tool(
-    ({ from, to }) => {
-      console.log({ from, to });
-      const stmt = database.prepare(
-        `select * from expenses where date BETWEEN ? and ?`,
-      );
-      const rows = stmt.all(from, to);
+    ({ title,from, to }) => {
+      console.log({ title, from, to});
+     let query = `SELECT * FROM expenses WHERE date BETWEEN ? AND ?`
+     const params: any[] = [from, to];
+
+      if (title) {
+        query += ` AND title LIKE ?`;
+        params.push(`%${title}%`);
+      }
+       
+      const rows = database.prepare(query).all(...params);
       // console.log("Rows", rows);
       // console.log(JSON.stringify(rows,null,2))
 
@@ -47,6 +52,7 @@ export function initTools(database: Database) {
       schema: z.object({
         from: z.string().describe("start date of expense in YYYY-MM-DD format"),
         to: z.string().describe("end date of expense in YYYY-MM-DD format"),
+        title: z.string().describe("title of the product to filter"),
       }),
     },
 

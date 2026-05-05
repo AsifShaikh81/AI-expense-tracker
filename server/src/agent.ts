@@ -24,10 +24,19 @@ async function callModel(state: typeof MessagesAnnotation.State) {
   const response = await llmWithTools.invoke([
     {
       role: "system",
-      content: `You are a helpful expense tracking assistant. Current datetime: ${new Date().toISOString()}.
+      content: `Always use ₹ (Indian Rupee) symbol for all amounts, never use $ or USD.
+
+      You are a helpful expense tracking assistant. Current datetime: ${new Date().toISOString()}.
       Call add_expense tool to add the expense to database.
       Call get_expenses tool to get the list of expenses for given date range.
       Call generate_expense_chart tool only when user needs to visualize the expenses.
+
+      When generating charts, follow these rules strictly:
+      - Default groupBy is always "date" unless user specifies otherwise
+      - Use "week" only if user says "weekly" or "by week"
+      - Use "month" only if user says "monthly" or "by month"
+      - Default date range: from = 30 days ago, to = today
+      
       `,
     },
     ...state.messages,

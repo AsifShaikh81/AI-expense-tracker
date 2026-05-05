@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import type { StreamMessage } from "../type.ts";
+import { BadgeDollarSign, BrainCircuit, BrainCog, CircleDollarSign, PiggyBank } from "lucide-react";
 
 
 export function ChatContainer() {
   const [messages, setMessages] = useState<StreamMessage[]>([]);
+  const scrollref = useRef<HTMLDivElement>(null)
+
+  useEffect(()=>{
+  scrollref.current?.scrollIntoView({behavior:'smooth'})
+  },[messages])
 
   //* SSE((server sent event)) - recciving on clinet side
 
@@ -18,7 +24,7 @@ export function ChatContainer() {
           {
             type:'user', 
             payload:{text:userInput},
-            id:`${Date.now()}-${Math.random()}`
+            id:Date.now().toString(),
           }
         ]
       })
@@ -128,20 +134,12 @@ export function ChatContainer() {
       <div className="shrink-0 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl w-full">
         <div className="w-full max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center shadow-lg">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br flex items-center justify-center shadow-lg  from-[#f59e0b] to-[#ef4444]">
+              {/* <BrainCog /> */}
+              {/* <BrainCircuit className="text-white" /> */}
+              {/* <BadgeDollarSign /> */}
+              <CircleDollarSign className="text-white"/>
+
             </div>
             <div>
               <h1 className="text-lg font-semibold text-zinc-100">
@@ -163,20 +161,9 @@ export function ChatContainer() {
         <div className="w-full max-w-5xl mx-auto">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] px-6 py-8">
-              <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center shadow-2xl mb-6 animate-pulse">
-                <svg
-                  className="w-10 h-10 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
+              <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-[#f59e0b] to-[#ef4444] flex items-center justify-center shadow-2xl mb-6 animate-pulse">
+              <CircleDollarSign className="text-white w-10 h-10"/>
+
               </div>
               <h2 className="text-3xl font-bold text-zinc-100 mb-3">
                 How can I help you today?
@@ -234,6 +221,9 @@ export function ChatContainer() {
                   </div>
                 )
               })}
+              <div ref={scrollref}>
+
+              </div>
             </div>
           )}
         </div>
