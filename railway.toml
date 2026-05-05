@@ -1,6 +1,5 @@
 # railway.toml
-[build]
-builder = "nixpacks"
+
 
 [deploy]
 startCommand = "bun run server.ts"
